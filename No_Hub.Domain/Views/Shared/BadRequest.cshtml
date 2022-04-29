@@ -1,0 +1,26 @@
+@model No_Hub.Domain.Models.ViewModels.BadRouteResult
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<h2>@Model.Title</h2>
+<br/>
+
+<h3>Messages</h3>
+<ul>
+    @foreach (var message in Model.Messages)
+    {
+        <li>@message</li>
+    }
+</ul>
+
+<br/>
+<h3>Errors</h3>
+<ul>
+    @foreach (var error in Model.Errors)
+    {
+        <li>@error</li>
+    }
+</ul>

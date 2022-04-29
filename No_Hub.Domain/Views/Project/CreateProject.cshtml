@@ -1,0 +1,14 @@
+@model No_Hub.Domain.Data.DTOs.ProjectDto
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> _signInManager
+@inject UserManager<IdentityUser> _userManager
+
+
+<div>Hello @_userManager.GetUserId(User)!</div>
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<h2>title</h2>

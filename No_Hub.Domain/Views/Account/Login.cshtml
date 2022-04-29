@@ -1,0 +1,32 @@
+@model No_Hub.Domain.Data.DTOs.UserLoginDto
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    Layout = "_Layout";
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <title>title</title>
+</head>
+<body>
+<div>
+    <form method="post">
+        <div asp-validation-summary="ModelOnly"></div>
+        <div>
+            <input asp-for="Email" type="email">
+            <span asp-validation-for="Email"></span>
+            <label asp-for="Email">Enter email</label>
+        </div>
+        <div>
+            <input asp-for="Password" type="password">
+            <span asp-validation-for="Password"></span>
+            <label asp-for="Password">Enter password</label>
+        </div>
+        <button type="submit">Login</button>
+    </form>
+</div>
+</body>
+</html>
