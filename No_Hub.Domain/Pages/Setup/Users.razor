@@ -1,0 +1,96 @@
+@page "/users/setup"
+
+@using No_Hub.Domain.Services.Interfaces
+
+@inject UserManager<IdentityUser> UserManager
+@inject RoleManager<IdentityRole> RoleManager
+@inject ISetupManagerService SetupManager
+
+
+<h3>Users</h3>
+<br/>
+
+<div>
+    <ul>
+        @foreach (var message in _messages)
+        {
+            <li>@message</li>
+        }
+    </ul>
+</div>
+<br/>
+
+@foreach (var user in _users)
+{
+    <div>
+        <div><b>@user.UserName</b></div>
+        @foreach (var role in _roles)
+        {
+            <span>@role.Name</span>
+            <input type="checkbox"
+                   checked="@(async () => await UserManager.IsInRoleAsync(user, role.Name))"
+                   @*@onchange="@(async args => await ChangeRole(user, role.Name, args.Value))"*@ />
+        }
+    </div>
+    <br/>
+    
+}
+<br/>
+<div>
+    <ul>
+        @foreach (var error in _errors)
+        {
+            <li>@error</li>
+        }
+    </ul>
+</div>
+
+@code {
+    private List<IdentityUser> _users;
+    private List<IdentityRole> _roles;
+    
+    private List<string> _messages;
+    private List<string> _errors;
+
+    private async Task ChangeRole(IdentityUser user, string roleName, object? value)
+    {
+        ClearMessagesAndErrors();
+        
+        bool isInRole;
+
+        if (value is bool b)
+        {
+            isInRole = b;
+        }
+        else
+        {
+            _errors.Add("Something goes wrong");
+            return;
+        }
+        
+        var result = await SetupManager.ChangeUserRoleAsync(user, roleName, isInRole);
+
+        if (!result.Success)
+        {
+            _errors = result.Errors.ToList();
+            return;
+        }
+        
+        _messages.Add("You successfully edit user role");
+    }
+    
+    private void ClearMessagesAndErrors()
+    {
+        _errors.Clear();
+        _messages.Clear();
+    }
+    
+    protected override void OnInitialized()
+    {
+        _users = UserManager.Users.ToList();
+        _roles = RoleManager.Roles.ToList();
+        _messages = new();
+        _errors = new();
+    }
+
+}

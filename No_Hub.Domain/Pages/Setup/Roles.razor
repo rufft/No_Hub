@@ -1,0 +1,97 @@
+@page "/Roles"
+@using No_Hub.Domain.Services.Interfaces
+
+@inject RoleManager<IdentityRole> RoleManager
+@inject ISetupManagerService SetupManager
+
+<div>
+    <ul>
+        @foreach (var message in _messages)
+        {
+            <li>@message</li>
+        }
+    </ul>
+</div>
+<div>
+    <ul>
+        @foreach (var role in _roles)
+        {
+            <li style="display: flex; gap: 10px">
+                <span>@role.Name</span>
+                <span>
+                    <button @onclick="async () => await DeleteRole(role.Name)">Delete</button>
+                </span>
+            </li>
+        }
+    </ul>
+</div>
+<div>
+    <span for="roleName">Add new role</span>
+    <input name="roleName" type="text" @bind="_newRoleName">
+    <button @onclick="async () => await CreateRole(_newRoleName)">Create role</button>
+    <div>
+        <ul>
+            @foreach (var error in _errors)
+            {
+                <li>@error</li>
+            }
+        </ul>
+    </div>
+</div>
+
+@code {
+    private List<IdentityRole> _roles = new();
+
+    private string _newRoleName = string.Empty;
+
+    private List<string> _messages;
+    private List<string> _errors;
+
+    private async Task CreateRole(string roleName)
+    {
+        ClearMessagesAndErrors();
+        
+        var result = await SetupManager.CreateRoleAsync(roleName);
+
+        if (!result.Success)
+        {
+            _errors = result.Errors.ToList();
+            return;
+        }
+
+        _messages.Add("You successfully added a role");
+        _newRoleName = string.Empty;
+        _roles = RoleManager.Roles.ToList();
+    }
+
+    private async Task DeleteRole(string roleName)
+    {
+        ClearMessagesAndErrors();
+        
+        var result = await SetupManager.DeleteRoleAsync(roleName);
+
+        if (!result.Success)
+        {
+            _errors = result.Errors.ToList();
+            return;
+        }
+        
+        _messages.Add("You successfully remove a role");
+        _newRoleName = string.Empty;
+        _roles = RoleManager.Roles.ToList();
+    }
+
+    private void ClearMessagesAndErrors()
+    {
+        _errors.Clear();
+        _messages.Clear();
+    }
+    
+    protected override void OnInitialized()
+    {
+        _roles = RoleManager.Roles.ToList();
+        _messages = new();
+        _errors = new();
+    }
+    
+}
